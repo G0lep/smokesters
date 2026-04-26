@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Case Opener: Курить / Не курить</title>
+    <style>
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, 'Inter', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 16px;
+        }
+        .app {
+            max-width: 550px;
+            width: 100%;
+            background: rgba(10, 20, 28, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 64px 64px 48px 48px;
+            padding: 24px 20px 32px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .case-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 10px;
+            perspective: 800px;
+        }
+        .case {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle at 30% 25%, #e6b85e, #b46f1f);
+            border-radius: 28px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5), inset 0 1px 4px rgba(255,215,130,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 2px solid #ffd966;
+        }
+        .case:active {
+            transform: scale(0.97);
+        }
+        .case-lid {
+            font-size: 65px;
+            filter: drop-shadow(2px 6px 8px rgba(0,0,0,0.4));
+        }
+        .case-label {
+            background: #2c1a0c;
+            color: #ffcd7e;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+            border: 1px solid #ffb347;
+        }
+        .case-animate {
+            animation: shakeCase 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both, glowFlash 0.4s ease-in-out 0.2s;
+        }
+        @keyframes shakeCase {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(8deg) scale(1.02); }
+            50% { transform: rotate(-6deg) scale(1.05); }
+            75% { transform: rotate(4deg); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes glowFlash {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+            40% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0.6), inset 0 0 10px gold; }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        .result-area {
+            background: #07121bd9;
+            border-radius: 60px;
+            padding: 12px 20px;
+            margin: 20px 0 16px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            min-height: 95px;
+        }
+        .result-card {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+            animation: fadeSlideUp 0.4s ease-out;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-emoji { font-size: 48px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0 12px;
+        }
+        .stat-card {
+            background: #0b1620b3;
+            border-radius: 28px;
+            padding: 12px 10px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #bbb;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffdd99;
+            line-height: 1.2;
+        }
+        .cooldown {
+            background: #0a0f1ae6;
+            border-radius: 48px;
+            text-align: center;
+            padding: 12px;
+            margin: 16px 0 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .timer {
+            font-family: monospace;
+            font-size: 28px;
+            letter-spacing: 3px;
+            color: #f2c94c;
+        }
+        button {
+            background: #ffb347;
+            border: none;
+            font-weight: bold;
+            font-size: 22px;
+            padding: 14px;
+            width: 100%;
+            border-radius: 60px;
+            color: #1e2a32;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 #a45f1a;
+            margin-top: 8px;
+        }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #a45f1a;
+        }
+        button:disabled {
+            opacity: 0.5;
+            transform: none;
+            cursor: not-allowed;
+        }
+        .footer-note {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 16px;
+            color: #7f8c8d;
+        }
+        @media (max-width: 480px) {
+            .case { width: 170px; height: 170px; }
+            .case-lid { font-size: 50px; }
+            .stat-value { font-size: 22px; }
+            .timer { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="case-container">
+        <div class="case" id="caseBox">
+            <div class="case-lid">📦✨</div>
+            <div class="case-label">КЕЙС</div>
+        </div>
+    </div>
+    <div class="result-area" id="resultArea">
+        <div style="color:#aaa; font-size:14px;">⬅️ Нажми на кейс</div>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Открытий всего</div><div class="stat-value" id="totalOpens">0</div></div>
+        <div class="stat-card"><div class="stat-label">🚬 "Курить"</div><div class="stat-value" id="smokeCount">0</div></div>
+        <div class="stat-card"><div class="stat-label">🍃 "Не курить"</div><div class="stat-value" id="notSmokeCount">0</div></div>
+        <div class="stat-card"><div class="stat-label">📦 Предметов "не курить" в кейсе</div><div class="stat-value" id="itemsInCase">1</div></div>
+        <div class="stat-card"><div class="stat-label">🎲 Шанс "курить"</div><div class="stat-value" id="smokeChance">50.0%</div></div>
+        <div class="stat-card"><div class="stat-label">⏱️ Множитель кулдауна</div><div class="stat-value" id="cdMultiplier">1.00x</div></div>
+    </div>
+    <div class="cooldown">
+        <div>🔒 Следующее открытие через</div>
+        <div class="timer" id="timerDisplay">--:--:--</div>
+    </div>
+    <button id="openBtn">🗝️ ОТКРЫТЬ КЕЙС</button>
+    <div class="footer-note">
+        ⚡ Каждые 4 открытия → +1 предмет «не курить» в кейсе<br>
+        ⏲️ Время ожидания увеличивается на 1% после каждого открытия
+    </div>
+</div>
+
+<script>
+    const API_BASE = ''; // пусто, т.к. прокси через статику
+    let timerInterval = null;
+
+    async function fetchState() {
+        const resp = await fetch('/state');
+        if (!resp.ok) throw new Error('Network error');
+        return await resp.json();
+    }
+
+    async function performOpen() {
+        const btn = document.getElementById('openBtn');
+        btn.disabled = true;
+        try {
+            const resp = await fetch('/open', { method: 'POST' });
+            if (!resp.ok) {
+                const err = await resp.json();
+                if (resp.status === 429) {
+                    showResultMessage(`⏳ Кулдаун: ${formatTime(err.remainingMs)}`, '⏰');
+                    await updateUI();
+                } else {
+                    showResultMessage('Ошибка сервера', '❌');
+                }
+                return;
+            }
+            const data = await resp.json();
+            // Анимация кейса
+            const caseBox = document.getElementById('caseBox');
+            caseBox.classList.add('case-animate');
+            setTimeout(() => caseBox.classList.remove('case-animate'), 600);
+
+            if (data.result === 'smoke') {
+                showResultMessage('🚬 КУРИТЬ! Шанс уменьшится.', '🚬');
+            } else {
+                showResultMessage('🍃 НЕ КУРИТЬ! Отличный результат.', '🍃');
+            }
+            await updateUI();
+        } catch (err) {
+            console.error(err);
+            showResultMessage('Ошибка соединения', '⚠️');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function updateUI() {
+        const state = await fetchState();
+        document.getElementById('totalOpens').innerText = state.totalOpens;
+        document.getElementById('smokeCount').innerText = state.smokeDropCount;
+        document.getElementById('notSmokeCount').innerText = state.notSmokeDropCount;
+        document.getElementById('itemsInCase').innerText = state.notSmokeItemsInCase;
+        const chancePercent = (state.smokeChance * 100).toFixed(1);
+        document.getElementById('smokeChance').innerText = `${chancePercent}%`;
+        document.getElementById('cdMultiplier').innerText = state.cooldownMultiplier.toFixed(4) + 'x';
+        
+        const btn = document.getElementById('openBtn');
+        btn.disabled = !state.canOpen;
+        
+        // Обновить таймер на основе оставшегося времени
+        updateTimerDisplay(state.remainingCooldownMs);
+    }
+
+    function updateTimerDisplay(remainingMs) {
+        const timerEl = document.getElementById('timerDisplay');
+        if (remainingMs <= 0) {
+            timerEl.innerText = 'ГОТОВО!';
+        } else {
+            timerEl.innerText = formatTime(remainingMs);
+        }
+    }
+
+    function formatTime(ms) {
+        const hours = Math.floor(ms / (1000 * 60 * 60));
+        const minutes = Math.floor((ms % (3600000)) / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    }
+
+    function showResultMessage(text, emoji = '📢') {
+        const resultArea = document.getElementById('resultArea');
+        resultArea.innerHTML = `
+            <div class="result-card">
+                <span class="result-emoji">${emoji}</span>
+                <span>${text}</span>
+                <span class="result-emoji">${emoji}</span>
+            </div>
+        `;
+        // Автоматически вернуть стандартный вид через 4 секунды
+        setTimeout(() => {
+            if (document.getElementById('resultArea').innerHTML.includes(text)) {
+                document.getElementById('resultArea').innerHTML = '<div style="color:#aaa; font-size:14px;">⬅️ Нажми на кейс</div>';
+            }
+        }, 4000);
+    }
+
+    async function refreshTimerLoop() {
+        try {
+            const state = await fetchState();
+            updateTimerDisplay(state.remainingCooldownMs);
+            const btn = document.getElementById('openBtn');
+            btn.disabled = !state.canOpen;
+        } catch (e) {
+            console.warn('Timer refresh error');
+        }
+    }
+
+    // Запуск цикла обновления каждую секунду
+    function startTimerLoop() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(refreshTimerLoop, 1000);
+    }
+
+    document.getElementById('openBtn').addEventListener('click', performOpen);
+    document.getElementById('caseBox').addEventListener('click', performOpen);
+
+    (async function init() {
+        await updateUI();
+        startTimerLoop();
+    })();
+</script>
+</body>
+</html>
